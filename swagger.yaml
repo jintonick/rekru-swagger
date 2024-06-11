@@ -1,0 +1,397 @@
+openapi: 3.0.0
+info:
+  title: Job and Resume Management API
+  version: 1.0.0
+  description: API for managing job listings and resumes
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+tags:
+  - name: vacancy
+  - name: resume
+paths:
+  /api/job:
+    get:
+      tags:
+        - vacancy
+      summary: Возвращает список всех вакансий с возможностью фильтрации и поиска
+      parameters:
+        - in: query
+          name: experience
+          schema:
+            type: string
+          description: Опыт работы (например, от 1 года до 3х лет, от 3х лет до 5 лет, больше 5 лет)
+        - in: query
+          name: city
+          schema:
+            type: string
+          description: Название города
+        - in: query
+          name: employment_type
+          schema:
+            type: string
+          description: Тип занятости (например, полная занятость, частичная занятость, проектная работа, стажировка)
+        - in: query
+          name: salary
+          schema:
+            type: string
+          description: Зарплата (например, от 50000 до 100000)
+        - in: query
+          name: company
+          schema:
+            type: string
+          description: Название компании
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Поисковый запрос
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Лимит записей
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Номер страницы
+        - in: query
+          name: job_id
+          schema:
+            type: string
+          description: Идентификатор вакансии
+        - in: query
+          name: responses
+          schema:
+            type: integer
+          description: Количество откликов
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: Дата изменения
+      responses:
+        200:
+          description: Список вакансий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    salary:
+                      type: string
+                    city:
+                      type: string
+                    employment_type:
+                      type: string
+                    description:
+                      type: string
+                    schedule:
+                      type: integer
+
+  /api/job/{job_id}:
+    get:
+      tags:
+        - vacancy
+      summary: Возвращает вакансию по ее job_id
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор вакансии
+      responses:
+        200:
+          description: Информация о вакансии
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  language:
+                    type: string
+                  city:
+                    type: string
+                  salary:
+                    type: string
+                  address:
+                    type: string
+                  experience:
+                    type: string
+                  description:
+                    type: string
+                  employment_type:
+                    type: integer
+                  schedule:
+                    type: integer
+
+  /api/job/archive:
+    get:
+      tags:
+        - vacancy
+      summary: Возвращает список вакансий в архиве
+      responses:
+        200:
+          description: Список архивных вакансий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    salary:
+                      type: string
+                    city:
+                      type: string
+                    employment_type:
+                      type: string
+                    description:
+                      type: string
+                    schedule:
+                      type: integer
+
+  /api/job/new_job:
+    post:
+      tags:
+        - vacancy
+      summary: Создает новую вакансию
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                language:
+                  type: string
+                city:
+                  type: string
+                salary:
+                  type: string
+                address:
+                  type: string
+                experience:
+                  type: string
+                description:
+                  type: string
+                employment_type:
+                  type: integer
+                schedule:
+                  type: integer
+                date:
+                  type: string
+      responses:
+        201:
+          description: Вакансия создана
+
+  /api/job/archive/{job_id}:
+    post:
+      tags:
+        - vacancy
+      summary: Переносит конкретную вакансию в архив или возвращает вакансию обратно в активные
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор вакансии
+      responses:
+        200:
+          description: Статус вакансии изменен
+
+  /api/job/response/{job_id}/{user_id}:
+    post:
+      tags:
+        - vacancy
+      summary: Пользователь отправляет отклик на вакансию
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор вакансии
+        - in: path
+          name: user_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор пользователя
+      responses:
+        200:
+          description: Отклик отправлен
+
+  /api/job/edit/{job_id}:
+    put:
+      tags:
+        - vacancy
+      summary: Редактирует вакансию
+      parameters:
+        - in: path
+          name: job_id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор вакансии
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                language:
+                  type: string
+                city:
+                  type: string
+                salary:
+                  type: string
+                address:
+                  type: string
+                experience:
+                  type: string
+                description:
+                  type: string
+                employment_type:
+                  type: integer
+                schedule:
+                  type: integer
+      responses:
+        200:
+          description: Вакансия обновлена
+
+  /api/resume:
+    post:
+      tags:
+        - resume
+      summary: Пользователь добавляет новое резюме
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                job_name:
+                  type: string
+                gender:
+                  type: boolean
+                location:
+                  type: string
+                birth_date:
+                  type: string
+                phone_number:
+                  type: string
+                salary:
+                  type: string
+                education:
+                  type: string
+                skills:
+                  type: array
+                  items:
+                    type: string
+                nationality:
+                  type: string
+                disability:
+                  type: boolean
+                work_experience:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      company_name:
+                        type: string
+                      time_period:
+                        type: string
+                      position:
+                        type: string
+                      work_exp_description:
+                        type: string
+      responses:
+        201:
+          description: Резюме создано
+
+    get:
+      tags:
+        - resume
+      summary: Рекрутер получает список резюме с возможностью поиска и фильтрации по ним
+      parameters:
+        - in: query
+          name: search
+          schema:
+            type: string
+          description: Поисковый запрос
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          description: Лимит записей
+        - in: query
+          name: page
+          schema:
+            type: integer
+          description: Номер страницы
+        - in: query
+          name: resume_id
+          schema:
+            type: string
+          description: Идентификатор резюме
+        - in: query
+          name: date
+          schema:
+            type: string
+            format: date
+          description: Дата изменения
+      responses:
+        200:
+          description: Список резюме
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_name:
+                      type: string
+                    job_name:
+                      type: string
+                    birth_date:
+                      type: string
+                    work_experience:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          company_name:
+                            type: string
+                          time_period:
+                            type: string
+                          position:
+                            type: string
+                          work_exp_description:
+                            type: string
+                    skills:
+                      type: array
+                      items:
+                        type: string
